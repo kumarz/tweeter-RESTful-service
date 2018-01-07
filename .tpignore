@@ -1,0 +1,6 @@
+\Q/target/\E.*
+\Q/WebContent/WEB-INF/lib/\E.*
+\Q/.settings/\E.*
+\Q/.classpath\E
+\Q/.factorypath\E
+\Q/.project\E

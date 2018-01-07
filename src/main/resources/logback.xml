@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="file-name" value="tweeter" />
+	<property name="maxIndex" value="10" />
+	<property name="maxFileSize" value="20MB" />
+	
+	<!-- local -->
+	<if condition='property("com.tweeter.app.env").equalsIgnoreCase("local")'>
+		<then>
+		    <property name="env-log-path" value="C:/waslogs" />
+			<property name="root-level" value="DEBUG" />
+			<property name="provider-level" value="INFO" />
+			<property name="spring-level" value="DEBUG" />
+			<property name="hibernate-level" value="DEBUG" />
+			<property name="glassfish-level" value="DEBUG" />
+		</then>
+	</if>
+	
+	<!-- DEV -->
+	<if condition='property("com.tweeter.app.env").equalsIgnoreCase("dev")'>
+		<then>
+		    <property name="env-log-path" value="/opt/IBM/logs/applogs" />
+			<property name="root-level" value="DEBUG" />
+			<property name="provider-level" value="INFO" />
+			<property name="spring-level" value="DEBUG" />
+			<property name="hibernate-level" value="DEBUG" />
+			<property name="glassfish-level" value="DEBUG" />
+		</then>
+	</if>
+	
+	<!-- QA -->
+	<if condition='property("com.tweeter.app.env").equalsIgnoreCase("qa")'>
+		<then>
+		    <property name="env-log-path" value="/opt/IBM/logs/applogs" />
+			<property name="root-level" value="ERROR" />
+			<property name="provider-level" value="INFO" />
+			<property name="spring-level" value="ERROR" />
+			<property name="hibernate-level" value="ERROR" />
+			<property name="glassfish-level" value="OFF" />
+		</then>
+	</if>
+	
+	<!-- STAGE -->
+	<if condition='property("com.tweeter.app.env").equalsIgnoreCase("stage")'>
+		<then>
+		    <property name="env-log-path" value="/opt/IBM/logs/applogs" />
+			<property name="root-level" value="ERROR" />
+			<property name="provider-level" value="INFO" />
+			<property name="spring-level" value="ERROR" />
+			<property name="hibernate-level" value="ERROR" />
+			<property name="glassfish-level" value="OFF" />
+		</then>
+	</if>
+	
+	<!-- PROD -->
+	<if condition='property("com.tweeter.app.env").equalsIgnoreCase("prod")'>
+		<then>
+		    <property name="env-log-path" value="/opt/IBM/logs/applogs" />
+			<property name="root-level" value="ERROR" />
+			<property name="provider-level" value="INFO" />
+			<property name="spring-level" value="ERROR" />
+			<property name="hibernate-level" value="ERROR" />
+			<property name="glassfish-level" value="OFF" />
+		</then>
+	</if>
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+			
+		<File>${env-log-path}/${file-name}.log</File>
+					
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<FileNamePattern>${env-log-path}/${file-name}%i.log</FileNamePattern>
+			<minIndex>1</minIndex>
+        	<maxIndex>${maxIndex}</maxIndex>
+			
+		</rollingPolicy>
+		
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>${maxFileSize}</MaxFileSize>
+		</triggeringPolicy>
+		
+		<encoder>
+			<Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</Pattern>
+		</encoder>
+		
+	</appender>
+
+	<logger name="com.labcorp.ncp.provider" level="${provider-level:-ERROR}" />
+	<logger name="org.springframework.security" level="${spring-level:-ERROR}" />
+	<logger name="org.glassfish" level="${glassfish-level:-OFF}" />
+	<logger name="org.glassfish.jersey.server.internal.scanning" level="${glassfish-level:-OFF}" />
+
+	<root level="${root-level:-INFO}">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>

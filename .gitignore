@@ -1,0 +1,8 @@
+target/
+bin/
+WebContent/WEB-INF/lib/
+.settings/
+.classpath
+.factorypath
+.project
+.apt_generated/

@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+  	<groupId>com.tweeter.app</groupId>
+  	<artifactId>tweeter</artifactId>
+  	<version>1.0-SNAPSHOT</version>
+  </parent>
+
+	<artifactId>tweeter-ear</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Tweeter :  REST Services ::  EAR</name>
+
+
+
+<dependencies>
+		<dependency>
+			<groupId>com.tweeter.app</groupId>
+			<artifactId>tweeter</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>war</type>
+		</dependency>
+	</dependencies>
+
+		<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<!-- Skipping clean target as it will delete /target dir while build 
+						all the modules including results-web -->
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>ear</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-clean-plugin</artifactId>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-ear-plugin</artifactId>
+						<configuration>
+							<applicationXml>${project.basedir}/src/main/webapp/WEB-INF/mvc-dispatcher-servlet.xml</applicationXml>
+							
+					
+							<modules>
+								<webModule>
+									<groupId>com.tweeter.app</groupId>
+									<artifactId>tweeter</artifactId>
+									<bundleFileName>tweeter.war</bundleFileName>
+								</webModule>
+							</modules>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>ear</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
