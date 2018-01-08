@@ -25,7 +25,7 @@ public class TweeterDaoImpl implements TweeterDao {
 	private static final String GET_USER_QUERY = "SELECT * FROM USERS WHERE USERNAME = ?";
 	private static final String GET_FOLLOWERS_QUERY = "SELECT * FROM USERS WHERE USERNAME IN (SELECT FOLLOWER_USERNAME FROM FOLLOWERS WHERE USERNAME = ?)";
 	private static final String GET_FOLLOWING_USERS_QUERY = "SELECT * FROM USERS WHERE USERNAME IN (SELECT USERNAME FROM FOLLOWERS WHERE FOLLOWER_USERNAME = ?)";
-	private static final String INSERT_USER_QUERY = "INSERT INTO USERS (USERNAME,FIRSTNAME,LASTNAME,AGE,EMAIL,GENDER) VALUES (?, ?, ?, ?, ?, ? );";
+	private static final String INSERT_USER_QUERY = "INSERT OR REPLACE INTO USERS (USERNAME,FIRSTNAME,LASTNAME,AGE,EMAIL,GENDER) VALUES (?, ?, ?, ?, ?, ? );";
 	private static final String POST_MESSAGE_QUERY = "INSERT INTO MESSAGES (CONTENT,USERNAME,CREATE_TIMESTAMP) VALUES (?, ?, ?);";
 	private static final String GET_MESSAGES_QUERY = "SELECT * FROM MESSAGES WHERE USERNAME IN (?,(SELECT FOLLOWER_USERNAME FROM FOLLOWERS WHERE USERNAME = ?)) ORDER BY ID";
 	private static final String SEARCH_MESSAGES_QUERY = "SELECT * FROM MESSAGES WHERE USERNAME IN (?,(SELECT FOLLOWER_USERNAME FROM FOLLOWERS WHERE USERNAME = ?)) AND CONTENT like ? ORDER BY ID";
@@ -56,11 +56,11 @@ public class TweeterDaoImpl implements TweeterDao {
 	         Statement stmt = getDbConnection().createStatement();
 	         String usersTableSql = "CREATE TABLE IF NOT EXISTS USERS " +
 	                     "(USERNAME  TEXT PRIMARY KEY   NOT NULL, " + 
-	                     " AGE            INT     NOT NULL, " + 
-	                     " FIRSTNAME      TEXT    NOT NULL, " + 
-	                     " LASTNAME       TEXT    NOT NULL, " + 
-	                     " GENDER         TEXT    NOT NULL, " + 
-	                     " EMAIL          TEXT        NULL);";
+	                     " AGE            INT      NULL, " + 
+	                     " FIRSTNAME      TEXT     NULL, " + 
+	                     " LASTNAME       TEXT     NULL, " + 
+	                     " GENDER         TEXT     NULL, " + 
+	                     " EMAIL          TEXT     NULL);";
 	         
 	         String messagesTableSql = "CREATE TABLE IF NOT EXISTS MESSAGES ("+
 										"ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"+
@@ -208,8 +208,8 @@ public class TweeterDaoImpl implements TweeterDao {
 				stmt = getDbConnection().prepareStatement(UNOLLOW_USER_QUERY);
 			}
 			
-	        stmt.setString(1, userName);
-	        stmt.setString(2, followUserName);
+	        stmt.setString(1, followUserName);
+	        stmt.setString(2, userName);
 	        stmt.executeUpdate();
 	        dbConnection.commit();
 		    stmt.close();
