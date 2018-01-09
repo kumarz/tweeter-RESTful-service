@@ -8,20 +8,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.tweeter.app.model.GetConnectionsResponse;
 import com.tweeter.app.model.Message;
 import com.tweeter.app.model.MostPopularUser;
 import com.tweeter.app.model.StatusBean;
 import com.tweeter.app.model.User;
-import com.tweeter.app.model.GetConnectionsResponse;
+import com.tweeter.app.model.UsersPairedWithPopularFollowerResponse;
 import com.tweeter.app.service.TweeterService;
 
 import io.swagger.annotations.Api;
@@ -45,6 +45,23 @@ public class TweeterController {
 		LOG.info("[TweeterController - getUser] received request...");
 		try{
 			response = service.getUser(trim(userName));
+			if(response == null){
+				return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+			}
+			return new ResponseEntity(response, HttpStatus.OK);
+		}catch(Exception e){
+			return internalServerErrorResponse(e);
+		}
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@RequestMapping(value="usersPairedWithMostPopularUser" , method = RequestMethod.GET)
+	@ApiOperation(value = "usersPairedWithMostPopularUser", notes = "gets the details of all the users paired with most popular user with number of followers.")
+	public ResponseEntity getUserPairedWithMostPopularUser(){
+		ArrayList<UsersPairedWithPopularFollowerResponse> response = null ;
+		LOG.info("[TweeterController - getUserPairedWithMostPopularUser] received request...");
+		try{
+			response = service.getUserPairedWithMostPopularUser();
 			if(response == null){
 				return new ResponseEntity(response, HttpStatus.NOT_FOUND);
 			}

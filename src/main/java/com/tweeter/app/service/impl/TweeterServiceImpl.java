@@ -11,6 +11,7 @@ import com.tweeter.app.model.GetConnectionsResponse;
 import com.tweeter.app.model.Message;
 import com.tweeter.app.model.MostPopularUser;
 import com.tweeter.app.model.User;
+import com.tweeter.app.model.UsersPairedWithPopularFollowerResponse;
 import com.tweeter.app.service.TweeterService;
 
 public class TweeterServiceImpl implements TweeterService {
@@ -55,6 +56,10 @@ public class TweeterServiceImpl implements TweeterService {
 
 	public GetConnectionsResponse getConnections(String userName) throws Exception {
 		return tweeterDao.getConnections(userName);
+	}
+
+	public ArrayList<UsersPairedWithPopularFollowerResponse> getUserPairedWithMostPopularUser() throws Exception {
+		return tweeterDao.getUserPairedWithMostPopularUser();
 	}
 
 }

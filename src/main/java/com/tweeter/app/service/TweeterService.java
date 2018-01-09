@@ -6,6 +6,7 @@ import com.tweeter.app.model.GetConnectionsResponse;
 import com.tweeter.app.model.Message;
 import com.tweeter.app.model.MostPopularUser;
 import com.tweeter.app.model.User;
+import com.tweeter.app.model.UsersPairedWithPopularFollowerResponse;
 
 public interface TweeterService {
 	public User getUser(String userName) throws Exception;
@@ -17,4 +18,5 @@ public interface TweeterService {
 	public ArrayList<User> getFollowingUser(String trim) throws Exception;
 	public MostPopularUser getMostPouplarUser() throws Exception;
 	public GetConnectionsResponse getConnections(String userName) throws Exception;
+	public ArrayList<UsersPairedWithPopularFollowerResponse> getUserPairedWithMostPopularUser() throws Exception;
 }
