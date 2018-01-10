@@ -5,6 +5,9 @@ I have implemented `SWAGGER.io` for the detailed documentation for this service.
 I have implemented `HTTP BASIC` authentication for the service. Hence you will be asked to authenticate while loading the swagger-ui.html.
 I have implemented logback async way of logging the service activities as well.
 
+`NOTE: as of now implemented Arraylist, however if necessary and there is a valid reason, we can use map interface to avoid iterations while looking up for an specific item in the list. 
+For example: for the call that gets usersPAiredWithMostPopularfollower. we can use map, so that its easy to look for and get the info for a specific user.`
+
 screenshot of a swagger-ui.html for this service is shared below for reference.
 ![alt text](screenshots/swagger-ui.PNG "Swagger-ui.html")
 
