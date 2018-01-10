@@ -30,7 +30,7 @@ public class TweeterDaoImpl implements TweeterDao {
 	private static final String POST_MESSAGE_QUERY = "INSERT INTO MESSAGES (CONTENT,USERNAME,CREATE_TIMESTAMP) VALUES (?, ?, ?);";
 	private static final String GET_MESSAGES_QUERY = "SELECT * FROM MESSAGES WHERE USERNAME IN (?,(SELECT USERNAME FROM FOLLOWERS WHERE FOLLOWER_USERNAME = ?)) ORDER BY ID DESC";
 	private static final String SEARCH_MESSAGES_QUERY = "SELECT * FROM MESSAGES WHERE USERNAME IN (?,(SELECT FOLLOWER_USERNAME FROM FOLLOWERS WHERE USERNAME = ?)) AND CONTENT like ? ORDER BY ID";
-	private static final String FOLLOW_USER_QUERY = "INSERT INTO FOLLOWERS (USERNAME, FOLLOWER_USERNAME) VALUES (?, ?);";
+	private static final String FOLLOW_USER_QUERY = "INSERT OR REPLACE INTO FOLLOWERS (USERNAME, FOLLOWER_USERNAME) VALUES (?, ?);";
 	private static final String UNOLLOW_USER_QUERY = "DELETE FROM FOLLOWERS WHERE USERNAME = ? AND FOLLOWER_USERNAME = ?;";
 	private static final String GET_POPULAR_USER_QUERY = "select max(COUNT) as COUNT,USERS.USERNAME, USERS.FIRSTNAME, USERS.LASTNAME, USERS.EMAIL, USERS.AGE, USERS.GENDER from" +
 														 "(select count(*) as COUNT, USERNAME, id from FOLLOWERS group by USERNAME) a INNER JOIN USERS ON USERS.USERNAME = a.USERNAME order by a.id ASC;";
@@ -79,7 +79,6 @@ public class TweeterDaoImpl implements TweeterDao {
                      "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"+
                      "USERNAME  TEXT   NOT NULL, " + 
                      "FOLLOWER_USERNAME   TEXT     NOT NULL," +
-                     "PRIMARY KEY (USERNAME, FOLLOWER_USERNAME)" +
                      "FOREIGN KEY (FOLLOWER_USERNAME) REFERENCES USERS(USERNAME));"; 
 	         
 	         String enforceForiegnKey = "PRAGMA foreign_keys = ON;";
