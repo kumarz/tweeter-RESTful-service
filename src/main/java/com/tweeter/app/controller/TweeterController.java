@@ -62,9 +62,6 @@ public class TweeterController {
 		LOG.info("[TweeterController - getUserPairedWithMostPopularUser] received request...");
 		try{
 			response = service.getUserPairedWithMostPopularUser();
-			if(response == null){
-				return new ResponseEntity(response, HttpStatus.NOT_FOUND);
-			}
 			return new ResponseEntity(response, HttpStatus.OK);
 		}catch(Exception e){
 			return internalServerErrorResponse(e);
@@ -98,9 +95,6 @@ public class TweeterController {
 		try{
 			String userName = SecurityContextHolder.getContext().getAuthentication().getName().toLowerCase();
 			response = service.getMessages(trim(userName), null);
-			if(response == null){
-				return new ResponseEntity(response, HttpStatus.NOT_FOUND);
-			}
 			return new ResponseEntity(response, HttpStatus.OK);
 		}catch(Exception e){
 			return internalServerErrorResponse(e);
@@ -117,9 +111,6 @@ public class TweeterController {
 		ArrayList<Message> response = new ArrayList<Message>();
 		try{
 			response = service.getMessages(trim(userName), trim(textToBeSearched));
-			if(response == null){
-				return new ResponseEntity(response, HttpStatus.NOT_FOUND);
-			}
 			return new ResponseEntity(response, HttpStatus.OK);
 		}catch(Exception e){
 			return internalServerErrorResponse(e);
@@ -180,9 +171,6 @@ public class TweeterController {
 		LOG.info("[TweeterController - getFollowers] received request...");
 		try{
 			response = service.getFollowers(trim(userName.toLowerCase()));
-			if(response == null){
-				return new ResponseEntity(response, HttpStatus.NOT_FOUND);
-			}
 			return new ResponseEntity(response,HttpStatus.OK);
 		}catch(Exception e){
 			return internalServerErrorResponse(e);
@@ -198,9 +186,6 @@ public class TweeterController {
 		LOG.info("[TweeterController - getFollowingUser] received request...");
 		try{
 			response = service.getFollowingUser(trim(userName.toLowerCase()));
-			if(response == null){
-				return new ResponseEntity(response, HttpStatus.NOT_FOUND);
-			}
 			return new ResponseEntity(response,HttpStatus.OK);
 		}catch(Exception e){
 			return internalServerErrorResponse(e);
