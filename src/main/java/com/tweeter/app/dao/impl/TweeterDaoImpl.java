@@ -182,17 +182,12 @@ public class TweeterDaoImpl implements TweeterDao {
 	        stmt.setString(1, userName);
 	        stmt.setString(2, userName);
 	        ResultSet rs = stmt.executeQuery();
-	        int resultSetCount = 0;
 			while (rs.next()) {
 				 Message message = new Message();
 				 message.setUserName(StringUtils.trim(rs.getString("USERNAME")));
 				 message.setContent(StringUtils.trim(rs.getString("CONTENT")));
 				 message.setCreateTimeStamp(StringUtils.trim(rs.getString("CREATE_TIMESTAMP")));
 				 response.add(message);
-				 resultSetCount++;
-			}
-		    if(resultSetCount == 0){
-				response = null;
 			}
 		    rs.close();
 		    stmt.close();
@@ -239,7 +234,6 @@ public ArrayList<User> followers(String userName) throws Exception {
 		stmt = getDbConnection().prepareStatement(GET_FOLLOWERS_QUERY);
         stmt.setString(1, userName);
         ResultSet rs = stmt.executeQuery();
-        int resultSetCount = 0;
 		while (rs.next()) {
 			 User user = new User();
 	         int age  = rs.getInt("AGE");
@@ -250,10 +244,6 @@ public ArrayList<User> followers(String userName) throws Exception {
 	         user.setGender(StringUtils.trim(rs.getString("GENDER")));
 	         user.setAge(age);
 	         response.add(user);
-	         resultSetCount++;
-		}
-	    if(resultSetCount == 0){
-			response = null;
 		}
 	    rs.close();
 	    stmt.close();
@@ -274,7 +264,6 @@ public ArrayList<User> following(String userName) throws Exception {
 		stmt = getDbConnection().prepareStatement(GET_FOLLOWING_USERS_QUERY);
         stmt.setString(1, userName);
         ResultSet rs = stmt.executeQuery();
-        int resultSetCount = 0;
 		while (rs.next()) {
 			 User user = new User();
 	         int age  = rs.getInt("AGE");
@@ -285,10 +274,6 @@ public ArrayList<User> following(String userName) throws Exception {
 	         user.setGender(StringUtils.trim(rs.getString("GENDER")));
 	         user.setAge(age);
 	         response.add(user);
-	         resultSetCount++;
-		}
-	    if(resultSetCount == 0){
-			response = null;
 		}
 	    rs.close();
 	    stmt.close();
@@ -348,17 +333,12 @@ public ArrayList<UsersPairedWithPopularFollowerResponse> getUserPairedWithMostPo
 		PreparedStatement stmt = null;
 		stmt = getDbConnection().prepareStatement(GET_USERS_PAIRED_WITH_MOST_POPULAR_USER);
         ResultSet rs = stmt.executeQuery();
-        int resultSetCount = 0;
 		while (rs.next()) {
 			UsersPairedWithPopularFollowerResponse obj = new UsersPairedWithPopularFollowerResponse();
 			obj.setNumberOfFollowers(rs.getInt("COUNT"));
 			obj.setUserName(StringUtils.trim(rs.getString("USERNAME")));
 			obj.setMostPopularFollower(StringUtils.trim(rs.getString("POPULARFOLLOWER")));
-	        resultSetCount++;
 	        response.add(obj);
-		}
-	    if(resultSetCount == 0){
-			response = null;
 		}
 	    rs.close();
 	    stmt.close();
