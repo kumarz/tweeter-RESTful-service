@@ -19,10 +19,6 @@ Please make sure to have the JVM variable `-Dcom.tweeter.app.env=local`.
 
 This is just for easy way to check if the service is up and running fine in a non-local environment. So we can check if the service is up by this endpoint `http://localhost:port/tweeter/ping`.
 
-## Shortest distance between users
-
-We can find the shortest distance between two users thro their followers. The endpoint for this is `http://localhost:port/distance/{username1}/{username2}`
-
 ## User Creation
 
 The user creation is the first and foremost operation that we will be using in order to explore other features of this service.
@@ -33,6 +29,9 @@ The endpoint for user creation is `http://localhost:port/tweeter/user`.
 The user look-up feature will be the most used feature of this service, since this has to be performed to post/view messages for a user.
 The endpoint for posting a message for a user is `http://localhost:port/tweeter/user/{userName}`.
 
+## Shortest distance between users
+
+We can find the shortest distance between two users thro their followers. The endpoint for this is `http://localhost:port/distance/{username1}/{username2}`
 
 ## Messages
 

@@ -15,11 +15,8 @@
 	<properties>
 		<spring.version>4.3.6.RELEASE</spring.version>
 		<maven.test.skip>true</maven.test.skip>
-		<jacoco.percentage.minimum>0.10</jacoco.percentage.minimum>
-		<jacoco.skip>false</jacoco.skip>
 		<powermock.version>1.6.4</powermock.version>
 		<junit.version>4.9</junit.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
 	</properties>
   
