@@ -16,7 +16,12 @@ screenshot of a swagger-ui.html for this service is shared below for reference.
 Please make sure to have the JVM variable `-Dcom.tweeter.app.env=local`.
 
 ## Ping
+
 This is just for easy way to check if the service is up and running fine in a non-local environment. So we can check if the service is up by this endpoint `http://localhost:port/tweeter/ping`.
+
+## Shortest distance between users
+
+We can find the shortest distance between two users thro their followers. The endpoint for this is `http://localhost:port/distance/{username1}/{username2}
 
 ## User Creation
 
@@ -39,6 +44,7 @@ There is also an optional parameter for searching messages using keyword like sh
 ![alt text](screenshots/searchMessage.PNG "message feature")
 
 ## Connections
+
 I have implemented this feature to get all the followers and following users for a specified user.
 The endpoint for this is `http://localhost:port/tweeter/connections/{userName}`.
 

@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +40,8 @@ public class TweeterDaoImpl implements TweeterDao {
 			"(select f.follower_username, f.username from followers f order by follower_username) t1 "+
 			"left join (select username,count(username) as follower_count from followers where username in (select follower_username from followers) group by username) t2 "+
 			"on t1.username = t2.username group by t1.follower_username;";
+	private static final String GET_FOLLOWING_USER_NAME_QUERY = "SELECT USERNAME FROM FOLLOWERS WHERE FOLLOWER_USERNAME = ?";
+	
 	private Connection dbConnection;
 	
 	public Connection getDbConnection() throws SQLException, ClassNotFoundException {
@@ -325,6 +328,54 @@ public GetConnectionsResponse getConnections(String userName) throws Exception {
 	response.setFollowers(followers(userName));
 	response.setFollowing(following(userName));
 	return response;
+}
+
+public int getDistance(String userName1, String userName2) throws Exception {
+	int depth = 0;
+	try{
+		HashMap<String, String> followingUserNames = new HashMap<String, String>();
+		followingUserNames = getFollowingUserNames(userName1);
+		depth = getDistanceRecursive(userName2, depth, followingUserNames);
+		
+	}catch (Exception e){
+		LOG.info(e.getMessage());
+		e.printStackTrace();
+		rollbackDb();
+		throw new Exception();
+	}
+	return depth;
+}
+
+private int getDistanceRecursive(String userName2, int depth, HashMap<String, String> followingUserNames)
+		throws SQLException, ClassNotFoundException {
+	HashMap<String, String> followingUserFollowerNames;
+	depth++;
+	if(!followingUserNames.containsValue(userName2)){
+	    for (String key : followingUserNames.keySet()) {
+		   followingUserFollowerNames = getFollowingUserNames(followingUserNames.get(key));
+		   depth++; // on each level we got to increase the depth value
+		   if(followingUserFollowerNames.containsValue(userName2)){
+			   return depth; 
+		   }
+		}
+	}
+	return 0;
+}
+
+private HashMap<String, String> getFollowingUserNames(String value) throws SQLException, ClassNotFoundException {
+	PreparedStatement stmt = null;
+	stmt = getDbConnection().prepareStatement(GET_FOLLOWING_USERS_QUERY);
+    stmt.setString(1, value);
+    HashMap<String, String> followingUserNames = new HashMap<String, String>();
+    ResultSet rs = stmt.executeQuery();
+    while (rs.next()) {
+		String uName = StringUtils.trim(rs.getString("USERNAME"));
+        followingUserNames.put(uName, uName);
+	}
+    rs.close();
+    stmt.close();
+    
+	return followingUserNames;
 }
 
 public ArrayList<UsersPairedWithPopularFollowerResponse> getUserPairedWithMostPopularUser() throws Exception {
