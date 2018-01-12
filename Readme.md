@@ -21,7 +21,7 @@ This is just for easy way to check if the service is up and running fine in a no
 
 ## Shortest distance between users
 
-We can find the shortest distance between two users thro their followers. The endpoint for this is `http://localhost:port/distance/{username1}/{username2}
+We can find the shortest distance between two users thro their followers. The endpoint for this is `http://localhost:port/distance/{username1}/{username2}`
 
 ## User Creation
 
