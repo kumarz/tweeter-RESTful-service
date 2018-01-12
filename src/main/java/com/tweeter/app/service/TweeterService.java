@@ -19,4 +19,5 @@ public interface TweeterService {
 	public MostPopularUser getMostPouplarUser() throws Exception;
 	public GetConnectionsResponse getConnections(String userName) throws Exception;
 	public ArrayList<UsersPairedWithPopularFollowerResponse> getUserPairedWithMostPopularUser() throws Exception;
+	public int getDistance(String userName1, String userName2) throws Exception;
 }

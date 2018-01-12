@@ -62,4 +62,8 @@ public class TweeterServiceImpl implements TweeterService {
 		return tweeterDao.getUserPairedWithMostPopularUser();
 	}
 
+	public int getDistance(String userName1, String userName2) throws Exception {
+		return tweeterDao.getDistance(userName1, userName2);
+	}
+
 }

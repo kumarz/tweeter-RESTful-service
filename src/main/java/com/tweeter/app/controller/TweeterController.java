@@ -223,6 +223,20 @@ public class TweeterController {
 		}
 		
 	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@RequestMapping(value="distance/{userName1}/{userName2}" , method = RequestMethod.GET)
+	@ApiOperation(value = "distance/{userName1}/{userName2}", notes = "gets shortest distance between two users via their followers.")
+	public ResponseEntity getDistance(@PathVariable String userName1, @PathVariable String userName2){
+		LOG.info("[TweeterController - getDistance] received request...");
+		try{
+			int response = service.getDistance(StringUtils.trim(userName1.toLowerCase()),StringUtils.trim(userName2.toLowerCase()));
+			return new ResponseEntity(response,HttpStatus.OK);
+		}catch(Exception e){
+			return internalServerErrorResponse(e);
+		}
+		
+	}
 
 	/**
 	 * This method is to trim the strings and its null safe as well. 
