@@ -29,7 +29,8 @@ public class TweeterDaoImpl implements TweeterDao {
 	private static final String GET_FOLLOWING_USERS_QUERY = "SELECT * FROM USERS WHERE USERNAME IN (SELECT USERNAME FROM FOLLOWERS WHERE FOLLOWER_USERNAME = ?)";
 	private static final String INSERT_USER_QUERY = "INSERT OR REPLACE INTO USERS (USERNAME,FIRSTNAME,LASTNAME,AGE,EMAIL,GENDER) VALUES (?, ?, ?, ?, ?, ? );";
 	private static final String POST_MESSAGE_QUERY = "INSERT INTO MESSAGES (CONTENT,USERNAME,CREATE_TIMESTAMP) VALUES (?, ?, ?);";
-	private static final String GET_MESSAGES_QUERY = "SELECT * FROM MESSAGES WHERE USERNAME IN (?,(SELECT USERNAME FROM FOLLOWERS WHERE FOLLOWER_USERNAME = ?)) ORDER BY ID DESC";
+	private static final String GET_MESSAGES_QUERY = "SELECT * FROM MESSAGES WHERE USERNAME IN (SELECT USERNAME FROM FOLLOWERS WHERE follower_username = ?)"+
+													 "UNION	SELECT * FROM MESSAGES WHERE USERNAME = ? ORDER BY ID DESC;";
 	private static final String SEARCH_MESSAGES_QUERY = "SELECT * FROM MESSAGES WHERE USERNAME IN (?,(SELECT FOLLOWER_USERNAME FROM FOLLOWERS WHERE USERNAME = ?)) AND CONTENT like ? ORDER BY ID";
 	private static final String FOLLOW_USER_QUERY = "INSERT OR REPLACE INTO FOLLOWERS (USERNAME, FOLLOWER_USERNAME) VALUES (?, ?);";
 	private static final String UNOLLOW_USER_QUERY = "DELETE FROM FOLLOWERS WHERE USERNAME = ? AND FOLLOWER_USERNAME = ?;";
@@ -47,8 +48,8 @@ public class TweeterDaoImpl implements TweeterDao {
 	public Connection getDbConnection() throws SQLException, ClassNotFoundException {
 		if(this.dbConnection == null){
 			Class.forName("org.sqlite.JDBC");
-			//this.dbConnection = DriverManager.getConnection("jdbc:sqlite:C:/sqlite/tweeter.db");
-			this.dbConnection = DriverManager.getConnection("jdbc:sqlite::memory:");
+			this.dbConnection = DriverManager.getConnection("jdbc:sqlite:C:/sqlite/tweeter.db");
+			//this.dbConnection = DriverManager.getConnection("jdbc:sqlite::memory:");
 			this.dbConnection.setAutoCommit(false);
 		}
 		return this.dbConnection;
@@ -103,10 +104,11 @@ public class TweeterDaoImpl implements TweeterDao {
 
 		User response = new User();
 		PreparedStatement stmt = null;
+		ResultSet rs = null;
 		try{
 			stmt = getDbConnection().prepareStatement(GET_USER_QUERY);
 			stmt.setString(1, usrName);
-			ResultSet rs = stmt.executeQuery();
+			rs = stmt.executeQuery();
 			int resultSetCount = 0;
 			while (rs.next()) {
 		         int age  = rs.getInt("AGE");
@@ -121,13 +123,14 @@ public class TweeterDaoImpl implements TweeterDao {
 			if(resultSetCount == 0){
 				response = null;
 			}
-		    rs.close();
-		    stmt.close();
 			
 		}catch (Exception e){
 			LOG.info(e.getMessage());
 			e.printStackTrace();
 			throw new Exception();
+		}finally{
+			rs.close();
+		    stmt.close();
 		}
 		
 		return response;
@@ -135,8 +138,10 @@ public class TweeterDaoImpl implements TweeterDao {
 	
 	
 	public void createUser(User request) throws Exception {
+		PreparedStatement stmt = null;
+		
 		try{
-			PreparedStatement stmt = getDbConnection().prepareStatement(INSERT_USER_QUERY);
+			stmt = getDbConnection().prepareStatement(INSERT_USER_QUERY);
 	        stmt.setString(1, request.getUserName());
 	        stmt.setString(2, request.getFirstName());
 	        stmt.setString(3, request.getLastName());
@@ -145,36 +150,43 @@ public class TweeterDaoImpl implements TweeterDao {
 	        stmt.setString(6, request.getGender());
 		    stmt.executeUpdate();
 		    dbConnection.commit();
-		    stmt.close();
+		    
 		}catch (Exception e){
 			LOG.info(e.getMessage());
 			e.printStackTrace();
 			rollbackDb();
 			throw new Exception();
+		}finally{
+			stmt.close();
 		}
 	}
 	
 	public void postMessage(Message request) throws Exception {
+		PreparedStatement stmt = null;
 		try{
-			PreparedStatement stmt = getDbConnection().prepareStatement(POST_MESSAGE_QUERY);
+			stmt = getDbConnection().prepareStatement(POST_MESSAGE_QUERY);
 	        stmt.setString(1, request.getContent());
 	        stmt.setString(2, request.getUserName());
 	        stmt.setString(3, request.getCreateTimeStamp());
 		    stmt.executeUpdate();
 		    dbConnection.commit();
-		    stmt.close();
+		    
 		}catch (Exception e){
 			LOG.info(e.getMessage());
 			e.printStackTrace();
 			rollbackDb();
 			throw new Exception();
+		}finally{
+			stmt.close();
 		}
 	}
 	
 	public ArrayList<Message> getMessages(String userName, String textToBeSearched) throws Exception {
 		ArrayList<Message> response = new ArrayList<Message>();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 		try{
-			PreparedStatement stmt = null;
+			
 			if(textToBeSearched == null){
 				stmt = getDbConnection().prepareStatement(GET_MESSAGES_QUERY);
 			}else{
@@ -184,7 +196,7 @@ public class TweeterDaoImpl implements TweeterDao {
 			}
 	        stmt.setString(1, userName);
 	        stmt.setString(2, userName);
-	        ResultSet rs = stmt.executeQuery();
+	        rs = stmt.executeQuery();
 			while (rs.next()) {
 				 Message message = new Message();
 				 message.setUserName(StringUtils.trim(rs.getString("USERNAME")));
@@ -192,21 +204,22 @@ public class TweeterDaoImpl implements TweeterDao {
 				 message.setCreateTimeStamp(StringUtils.trim(rs.getString("CREATE_TIMESTAMP")));
 				 response.add(message);
 			}
-		    rs.close();
-		    stmt.close();
 			
 		}catch (Exception e){
 			LOG.info(e.getMessage());
 			e.printStackTrace();
 			rollbackDb();
 			throw new Exception();
+		}finally{
+			rs.close();
+		    stmt.close();
 		}
 		return response;
 	}
 	
 	public void followOrUnfollowUser(String userName, String followUserName, Boolean toFollow) throws Exception {
+		PreparedStatement stmt = null;
 		try{
-			PreparedStatement stmt = null;
 			if(toFollow){
 				stmt = getDbConnection().prepareStatement(FOLLOW_USER_QUERY);
 				stmt.setString(1, followUserName);
@@ -219,24 +232,26 @@ public class TweeterDaoImpl implements TweeterDao {
 			
 	        stmt.executeUpdate();
 	        dbConnection.commit();
-		    stmt.close();
 			
 		}catch (Exception e){
 			LOG.info(e.getMessage());
 			e.printStackTrace();
 			rollbackDb();
 			throw new Exception();
+		}finally{
+			stmt.close();
 		}
 	}
 	
 	
 public ArrayList<User> followers(String userName) throws Exception {
 	ArrayList<User> response = new ArrayList<User>();
+	PreparedStatement stmt = null;
+	ResultSet rs = null;
 	try{
-		PreparedStatement stmt = null;
 		stmt = getDbConnection().prepareStatement(GET_FOLLOWERS_QUERY);
         stmt.setString(1, userName);
-        ResultSet rs = stmt.executeQuery();
+        rs = stmt.executeQuery();
 		while (rs.next()) {
 			 User user = new User();
 	         int age  = rs.getInt("AGE");
@@ -248,25 +263,28 @@ public ArrayList<User> followers(String userName) throws Exception {
 	         user.setAge(age);
 	         response.add(user);
 		}
-	    rs.close();
-	    stmt.close();
 		
 	}catch (Exception e){
 		LOG.info(e.getMessage());
 		e.printStackTrace();
 		rollbackDb();
 		throw new Exception();
+	}finally{
+		rs.close();
+	    stmt.close();
 	}
 	return response;
 }
 
 public ArrayList<User> following(String userName) throws Exception {
 	ArrayList<User> response = new ArrayList<User>();
+	PreparedStatement stmt = null;
+	ResultSet rs = null;
 	try{
-		PreparedStatement stmt = null;
+		
 		stmt = getDbConnection().prepareStatement(GET_FOLLOWING_USERS_QUERY);
         stmt.setString(1, userName);
-        ResultSet rs = stmt.executeQuery();
+        rs = stmt.executeQuery();
 		while (rs.next()) {
 			 User user = new User();
 	         int age  = rs.getInt("AGE");
@@ -278,24 +296,27 @@ public ArrayList<User> following(String userName) throws Exception {
 	         user.setAge(age);
 	         response.add(user);
 		}
-	    rs.close();
-	    stmt.close();
+	   
 		
 	}catch (Exception e){
 		LOG.info(e.getMessage());
 		e.printStackTrace();
 		rollbackDb();
 		throw new Exception();
+	}finally{
+		 rs.close();
+		 stmt.close();
 	}
 	return response;
 }
 
 public MostPopularUser getMostPouplarUser() throws Exception {
 	MostPopularUser response = new MostPopularUser();
+	PreparedStatement stmt = null;
+	ResultSet rs = null;
 	try{
-		PreparedStatement stmt = null;
 		stmt = getDbConnection().prepareStatement(GET_POPULAR_USER_QUERY);
-        ResultSet rs = stmt.executeQuery();
+        rs = stmt.executeQuery();
         int resultSetCount = 0;
 		while (rs.next()) {
 	         int age  = rs.getInt("AGE");
@@ -311,14 +332,15 @@ public MostPopularUser getMostPouplarUser() throws Exception {
 	    if(resultSetCount == 0){
 			response = null;
 		}
-	    rs.close();
-	    stmt.close();
-		
+	  
 	}catch (Exception e){
 		LOG.info(e.getMessage());
 		e.printStackTrace();
 		rollbackDb();
 		throw new Exception();
+	}finally{
+		rs.close();
+		stmt.close();
 	}
 	return response;
 }
@@ -335,7 +357,7 @@ public int getDistance(String userName1, String userName2) throws Exception {
 	try{
 		HashMap<String, String> followingUserNames = new HashMap<String, String>();
 		followingUserNames = getFollowingUserNames(userName1);
-		depth = getDistanceRecursive(userName2, depth, followingUserNames);
+		depth = calculateDepth(userName2, depth, followingUserNames);
 		
 	}catch (Exception e){
 		LOG.info(e.getMessage());
@@ -346,7 +368,7 @@ public int getDistance(String userName1, String userName2) throws Exception {
 	return depth;
 }
 
-private int getDistanceRecursive(String userName2, int depth, HashMap<String, String> followingUserNames)
+private int calculateDepth(String userName2, int depth, HashMap<String, String> followingUserNames)
 		throws SQLException, ClassNotFoundException {
 	HashMap<String, String> followingUserFollowerNames;
 	depth++;
@@ -364,26 +386,36 @@ private int getDistanceRecursive(String userName2, int depth, HashMap<String, St
 
 private HashMap<String, String> getFollowingUserNames(String value) throws SQLException, ClassNotFoundException {
 	PreparedStatement stmt = null;
-	stmt = getDbConnection().prepareStatement(GET_FOLLOWING_USERS_QUERY);
-    stmt.setString(1, value);
-    HashMap<String, String> followingUserNames = new HashMap<String, String>();
-    ResultSet rs = stmt.executeQuery();
-    while (rs.next()) {
-		String uName = StringUtils.trim(rs.getString("USERNAME"));
-        followingUserNames.put(uName, uName);
+	ResultSet rs = null;
+	HashMap<String, String> followingUserNames = new HashMap<String, String>();
+	
+	try{
+		stmt = getDbConnection().prepareStatement(GET_FOLLOWING_USERS_QUERY);
+	    stmt.setString(1, value);
+	    rs = stmt.executeQuery();
+	    while (rs.next()) {
+			String uName = StringUtils.trim(rs.getString("USERNAME"));
+	        followingUserNames.put(uName, uName);
+		}
+	}catch (Exception e){
+		
+	}finally{
+	    rs.close();
+	    stmt.close();
 	}
-    rs.close();
-    stmt.close();
     
 	return followingUserNames;
 }
 
 public ArrayList<UsersPairedWithPopularFollowerResponse> getUserPairedWithMostPopularUser() throws Exception {
 	ArrayList<UsersPairedWithPopularFollowerResponse> response = new ArrayList<UsersPairedWithPopularFollowerResponse>();
+	PreparedStatement stmt = null;
+	ResultSet rs = null;
+	
 	try{
-		PreparedStatement stmt = null;
+		
 		stmt = getDbConnection().prepareStatement(GET_USERS_PAIRED_WITH_MOST_POPULAR_USER);
-        ResultSet rs = stmt.executeQuery();
+        rs = stmt.executeQuery();
 		while (rs.next()) {
 			UsersPairedWithPopularFollowerResponse obj = new UsersPairedWithPopularFollowerResponse();
 			obj.setNumberOfFollowers(rs.getInt("COUNT"));
@@ -391,14 +423,15 @@ public ArrayList<UsersPairedWithPopularFollowerResponse> getUserPairedWithMostPo
 			obj.setMostPopularFollower(StringUtils.trim(rs.getString("POPULARFOLLOWER")));
 	        response.add(obj);
 		}
-	    rs.close();
-	    stmt.close();
 		
 	}catch (Exception e){
 		LOG.info(e.getMessage());
 		e.printStackTrace();
 		rollbackDb();
 		throw new Exception();
+	}finally{
+		 rs.close();
+		 stmt.close();
 	}
 	return response;
 }

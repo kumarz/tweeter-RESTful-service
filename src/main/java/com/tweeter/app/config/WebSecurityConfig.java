@@ -30,11 +30,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	        //.antMatchers(HttpMethod.POST, "/tweeter/**").hasRole("ADMIN");
    }
    
-   @Bean
-   public MyBasicAuthenticationEntryPoint getBasicAuthEntryPoint() {
-	   return new MyBasicAuthenticationEntryPoint();
-   }
-
 	/* To allow Pre-flight [OPTIONS] request from browser */
 	@Override
 	public void configure(WebSecurity web) throws Exception {

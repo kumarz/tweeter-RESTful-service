@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,25 +76,6 @@ public class TweeterController {
 		try{
 			service.createUser(request);
 			return new ResponseEntity(HttpStatus.OK);
-		}catch(Exception e){
-			return internalServerErrorResponse(e);
-		}
-		
-	}
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@RequestMapping(value="messages" , method = RequestMethod.GET)
-	@ApiOperation(value = "messages", 
-	notes = "Gets all the messages posted by the signed user via HTTP basic authentication. "
-			+ "If you didnt get output for this call, please make sure that there is atleast an entry in the messages table for that particular username. You will be receiving 'NOT FOUND' HTTP status if there is no messages for the signed in user.")
-	public ResponseEntity getMessages(){
-		
-		LOG.info("[TweeterController - getMessages] received request...");
-		ArrayList<Message> response = new ArrayList<Message>();
-		try{
-			String userName = SecurityContextHolder.getContext().getAuthentication().getName().toLowerCase();
-			response = service.getMessages(trim(userName), null);
-			return new ResponseEntity(response, HttpStatus.OK);
 		}catch(Exception e){
 			return internalServerErrorResponse(e);
 		}
@@ -216,7 +196,7 @@ public class TweeterController {
 	public ResponseEntity getConnections(@PathVariable String userName){
 		LOG.info("[TweeterController - getConnections] received request...");
 		try{
-			GetConnectionsResponse response = service.getConnections(StringUtils.trim(userName.toLowerCase()));
+			GetConnectionsResponse response = service.getConnections(trim(userName.toLowerCase()));
 			return new ResponseEntity(response,HttpStatus.OK);
 		}catch(Exception e){
 			return internalServerErrorResponse(e);
@@ -230,7 +210,7 @@ public class TweeterController {
 	public ResponseEntity getDistance(@PathVariable String userName1, @PathVariable String userName2){
 		LOG.info("[TweeterController - getDistance] received request...");
 		try{
-			int response = service.getDistance(StringUtils.trim(userName1.toLowerCase()),StringUtils.trim(userName2.toLowerCase()));
+			int response = service.getDistance(trim(userName1.toLowerCase()),trim(userName2.toLowerCase()));
 			return new ResponseEntity(response,HttpStatus.OK);
 		}catch(Exception e){
 			return internalServerErrorResponse(e);
@@ -243,7 +223,7 @@ public class TweeterController {
 	 * we would like to catch them as soon as the request comes in.
 	 * So that we dont have to worry about down the way to db while processing them
 	 * @param input
-	 * @return
+	 * @return trimmed input string
 	 */
 	private String trim(String input){
 		return StringUtils.trim(input);
