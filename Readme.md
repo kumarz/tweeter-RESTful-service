@@ -17,7 +17,7 @@ Please make sure to have the JVM variable `-Dcom.tweeter.app.env=local`.
 
 ## Ping
 
-This is just for easy way to check if the service is up and running fine in a non-local environment. So we can check if the service is up by this endpoint `http://localhost:port/tweeter/ping`.
+This is just for easy way to check if the service is up and running fine in a any environment. This can be achieved by the endpoint `http://localhost:port/tweeter/ping`.
 
 ## User Creation
 

@@ -29,8 +29,7 @@
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
 				<configuration>
-					<!-- Skipping clean target as it will delete /target dir while build 
-						all the modules including results-web -->
+					<!-- Skipping clean target as it will delete /target dir while build all the modules-->
 					<skip>true</skip>
 				</configuration>
 			</plugin>
