@@ -48,8 +48,8 @@ public class TweeterDaoImpl implements TweeterDao {
 	public Connection getDbConnection() throws SQLException, ClassNotFoundException {
 		if(this.dbConnection == null){
 			Class.forName("org.sqlite.JDBC");
-			this.dbConnection = DriverManager.getConnection("jdbc:sqlite:C:/sqlite/tweeter.db");
-			//this.dbConnection = DriverManager.getConnection("jdbc:sqlite::memory:");
+			//this.dbConnection = DriverManager.getConnection("jdbc:sqlite:C:/sqlite/tweeter.db");
+			this.dbConnection = DriverManager.getConnection("jdbc:sqlite::memory:");
 			this.dbConnection.setAutoCommit(false);
 		}
 		return this.dbConnection;
