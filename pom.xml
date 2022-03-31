@@ -13,7 +13,7 @@
 
   	
 	<properties>
-		<spring.version>5.2.7.RELEASE</spring.version>
+		<spring.version>5.3.18</spring.version>
 		<maven.test.skip>true</maven.test.skip>
 		<powermock.version>1.6.4</powermock.version>
 		<junit.version>4.9</junit.version>
